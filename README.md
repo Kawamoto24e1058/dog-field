@@ -26,6 +26,43 @@
 
 ## 注意
 - GitHub Pages は静的ホスティングです。サーバー機能（リアルタイム対戦など）が必要な場合は別途無料バックエンド（例：Cloudflare Workers）を用意します。必要なら次のステップで用意できます。
+
+## 無料バックエンド: Cloudflare Workers（WebSocket / マッチング）
+- フロントはGitHub Pagesで無料公開、バックエンドはCloudflare Workersで無料運用できます。
+- このリポジトリの `cf-worker/` に最小のWorkersひな型を追加しました（ロビーで2人を自動ペア、WebSocketでメッセージ中継）。
+
+### セットアップ / デプロイ手順
+1. Cloudflareに無料登録（クレジットカード不要）
+2. ローカルにwranglerをインストール
+   ```bash
+   npm install -g wrangler
+   wrangler login
+   ```
+3. ワーカーをデプロイ
+   ```bash
+   cd cf-worker
+   wrangler publish
+   ```
+4. 成功すると公開URL（例）が発行されます
+   - `https://<your-worker-subdomain>.workers.dev/health`
+   - WebSocketエンドポイント: `wss://<your-worker-subdomain>.workers.dev/ws`
+
+### クライアントからの利用例（最小）
+```html
+<script>
+  const ws = new WebSocket('wss://<your-worker-subdomain>.workers.dev/ws');
+  ws.onmessage = (ev) => {
+    const msg = JSON.parse(ev.data);
+    if (msg.type === 'waiting') console.log('待機中');
+    if (msg.type === 'paired') console.log('ペア成立', msg);
+    if (msg.type === 'relay') console.log('相手から', msg.data);
+  };
+  // 相手へJSONを送りたいとき
+  function send(data) { ws.send(JSON.stringify(data)); }
+</script>
+```
+
+このひな型は「ロビーで2人を自動ペア→メッセージ中継（relay）」までを提供します。ゲーム固有のプロトコル（ターン開始/カード使用/HP更新等）は、`relay` 経由でJSONを設計してやり取りしてください。必要ならクライアント実装もこちらで追加できます。
 | **通信** | Socket.io | ターン管理・HP同期・マッチング |
 | **データベース** | Firebase (Realtime DB) | プレイヤー情報・試合履歴保存 |
 
