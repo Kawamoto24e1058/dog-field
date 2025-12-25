@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐕 Dog Field - バトルカードゲーム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- ロビー画面 -->
+        <div id="lobby-screen" class="screen active">
+            <header class="lobby-header">
+                <h1>🐕 Dog Field</h1>
+                <p>ターン制オンライン対戦カードゲーム</p>
+            </header>
+
+            <div class="lobby-content">
+                <div class="join-section">
+                    <h2>ゲームに参加</h2>
+                    <input 
+                        type="text" 
+                        id="nickname-input" 
+                        placeholder="ニックネーム"
+                        maxlength="20"
+                    >
+                    <button id="join-btn" class="btn btn-primary">参加</button>
+                </div>
+
+                <div id="players-section" class="players-section" style="display: none;">
+                    <h2>オンラインプレイヤー</h2>
+                    <div id="players-list" class="players-list">
+                        <!-- プレイヤーリスト -->
+                    </div>
+                </div>
+
+                <div id="search-section" class="search-section" style="display: none;">
+                    <h2>マッチング</h2>
+                    <div id="search-status" class="search-status">待機中...</div>
+                    <button id="search-btn" class="btn btn-primary">クイックマッチ</button>
+                    <button id="cancel-search-btn" class="btn btn-secondary" style="display: none;">検索キャンセル</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ゲーム画面 -->
+        <div id="game-screen" class="screen">
+            <div class="game-header">
+                <div class="player opponent">
+                    <div class="player-name" id="opponent-name">対手</div>
+                    <div class="hp-display">
+                        <div class="hp-bar">
+                            <div id="opponent-hp-fill" class="hp-fill"></div>
+                        </div>
+                        <span id="opponent-hp-text" class="hp-text">100/100</span>
+                    </div>
+                    <div class="hand-size">手札: <span id="opponent-hand-size">5</span></div>
+                </div>
+
+                <div class="game-info">
+                    <div class="turn-info">
+                        <span id="turn-indicator">相手のターン</span>
+                        <div class="turn-timer">
+                            <span id="turn-timer-display">30秒</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="player player-self">
+                    <div class="player-name" id="player-name">あなた</div>
+                    <div class="hp-display">
+                        <div class="hp-bar">
+                            <div id="player-hp-fill" class="hp-fill"></div>
+                        </div>
+                        <span id="player-hp-text" class="hp-text">100/100</span>
+                    </div>
+                    <div class="defense-indicator" id="defense-indicator" style="display: none;">
+                        防御: <span id="defense-value">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-log">
+                <h3>アクション履歴</h3>
+                <div id="action-log-content" class="action-log-content">
+                    <!-- ゲーム開始時の情報 -->
+                </div>
+            </div>
+
+            <div class="game-board">
+                <div class="hand-section">
+                    <h3>手札</h3>
+                    <div id="hand-cards" class="hand-cards">
+                        <!-- プレイヤーの手札カードが表示される -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="surrender-btn" class="btn btn-danger">降参</button>
+            </div>
+        </div>
+
+        <!-- ゲーム終了画面 -->
+        <div id="game-over-screen" class="screen">
+            <div class="game-over-content">
+                <h2 id="game-over-title">試合終了</h2>
+                <div id="result-details" class="result-details">
+                    <!-- 結果詳細 -->
+                </div>
+                <button id="return-to-lobby-btn" class="btn btn-primary">ロビーに戻る</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="client-config.js"></script>
+    <script src="game-client.js"></script>
+</body>
+</html>
