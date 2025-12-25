@@ -629,6 +629,15 @@ input[type="text"]:focus {
     to { transform: translateX(0); opacity: 1; }
 }
 
+/* スクリーン管理 */
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
 /* レスポンシブ */
 @media (max-width: 768px) {
     .container {

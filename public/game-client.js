@@ -271,9 +271,9 @@ class GameClient {
   startGame(data) {
     console.log('🎮 ゲーム開始:', data);
 
-    // UI切り替え
-    this.hideScreen('lobby');
-    this.showScreen('game');
+    // UI切り替え: ロビーを隠す、ゲーム画面を表示
+    this.screens.lobby.classList.remove('active');
+    this.screens.game.classList.add('active');
 
     // プレイヤー情報設定
     const opponent = data.players.find(p => p.id !== this.playerId);
@@ -448,27 +448,32 @@ class GameClient {
       </ul>
     `;
 
-    this.hideScreen('game');
-    this.showScreen('gameOver');
+    // UI切り替え: ゲーム画面を隠す、終了画面を表示
+    this.screens.game.classList.remove('active');
+    this.screens.gameOver.classList.add('active');
   }
 
   /**
    * ロビーに戻る
    */
   returnToLobby() {
-    this.hideScreen('game');
-    this.hideScreen('gameOver');
-    this.showScreen('lobby');
+    // UI切り替え: 終了画面を隠す、ロビーを表示
+    this.screens.gameOver.classList.remove('active');
+    this.screens.lobby.classList.add('active');
     
+    // ゲーム状態をリセット
     this.gameState = null;
     this.matchId = null;
+    this.playerRole = null;
     
     clearInterval(this.turnTimer);
 
     // ロビー状態リセット
-    document.getElementById('search-btn').style.display = 'block';
     document.getElementById('cancel-search-btn').style.display = 'none';
     document.getElementById('search-status').textContent = '待機中...';
+    
+    // プレイヤー情報はリロード、または再度 join_game を呼ぶ場合
+    // このまま検索できるようにする場合、playerId を保持
   }
 
   /**
