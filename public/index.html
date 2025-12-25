@@ -8,43 +8,51 @@
 </head>
 <body>
     <div class="container">
-        <!-- ロビー画面 -->
-        <div id="lobby-screen" class="screen active">
-            <div class="lobby-content">
-                <div class="start-hero">
-                    <section class="start-copy">
-                        <div class="brand-row">
-                            <span class="brand-icon">🐕</span>
-                            <span class="brand-title gradient-text">Dog Field</span>
-                        </div>
-                        <h1 class="start-headline">ニックネームと合言葉で、すぐに対戦へ。</h1>
-                        <p class="start-subtitle">同じ合言葉のプレイヤー同士で自動マッチ。空欄なら誰とでも。</p>
-                        <div class="badge-list" aria-hidden="true">
-                            <span class="badge"><span class="emoji">⚔️</span> オンライン対戦</span>
-                            <span class="badge"><span class="emoji">⏱️</span> ターン制</span>
-                            <span class="badge"><span class="emoji">🔑</span> 合言葉マッチ</span>
-                            <span class="badge"><span class="emoji">🆓</span> 無料</span>
-                        </div>
-                    </section>
-                    <aside class="start-panel">
-                        <div class="field-group">
-                            <label for="nickname-input">ニックネーム</label>
-                            <input type="text" id="nickname-input" placeholder="例: Luna" maxlength="20">
-                        </div>
-                        <div class="field-group">
-                            <label for="keyword-input">合言葉（任意）</label>
-                            <input type="text" id="keyword-input" placeholder="例: 1234 / dog / friends" maxlength="20">
-                            <div id="keyword-hint" class="keyword-hint">未設定なら誰とでもマッチ（any）</div>
-                        </div>
-                        <div class="cta-row">
-                            <button id="start-btn" class="btn btn-primary large pulse"><span class="btn-icon">▶</span> マッチ開始</button>
-                            <button id="cancel-search-btn" class="btn btn-secondary ghost" style="display: none;">検索キャンセル</button>
-                            <div id="search-status" class="search-status">待機中...</div>
-                            <div id="waiting-keywords" class="waiting-keywords"></div>
-                        </div>
-                    </aside>
-                </div>
+        <!-- スタート画面（ホーム） -->
+        <div id="start-screen" class="screen active">
+            <div class="start-container">
+                <section class="start-copy">
+                    <div class="brand-row">
+                        <span class="brand-icon">🐕</span>
+                        <span class="brand-title gradient-text">Dog Field</span>
+                    </div>
+                    <h1 class="start-headline">ニックネームと合言葉で、すぐに対戦へ。</h1>
+                    <p class="start-subtitle">同じ合言葉のプレイヤー同士で自動マッチ。空欄なら誰とでも。</p>
+                    <div class="badge-list" aria-hidden="true">
+                        <span class="badge"><span class="emoji">⚔️</span> オンライン対戦</span>
+                        <span class="badge"><span class="emoji">⏱️</span> ターン制</span>
+                        <span class="badge"><span class="emoji">🔑</span> 合言葉マッチ</span>
+                        <span class="badge"><span class="emoji">🆓</span> 無料</span>
+                    </div>
+                </section>
+                <aside class="start-panel">
+                    <div class="field-group">
+                        <label for="nickname-input">ニックネーム</label>
+                        <input type="text" id="nickname-input" placeholder="例: Luna" maxlength="20">
+                    </div>
+                    <div class="field-group">
+                        <label for="keyword-input">合言葉（任意）</label>
+                        <input type="text" id="keyword-input" placeholder="例: 1234 / dog / friends" maxlength="20">
+                        <div id="keyword-hint" class="keyword-hint">未設定なら誰とでもマッチ（any）</div>
+                    </div>
+                    <div class="cta-row">
+                        <button id="start-btn" class="btn btn-primary large pulse"><span class="btn-icon">▶</span> マッチ開始</button>
+                    </div>
+                </aside>
             </div>
+        </div>
+
+        <!-- マッチング待機画面 -->
+        <div id="matching-screen" class="screen">
+            <div class="matching-container">
+                <div class="matching-content">
+                    <div class="matching-icon">🔍</div>
+                    <h2 class="matching-title">マッチング中...</h2>
+                    <div class="matching-spinner"></div>
+                    <div id="matching-keyword-display" class="matching-keyword-display">合言葉: <strong>any</strong></div>
+                    <div id="matching-status" class="matching-status">対手を探しています</div>
+                    <button id="cancel-matching-btn" class="btn btn-secondary">キャンセル</button>
+                </div>
             </div>
         </div>
 
@@ -113,14 +121,13 @@
                 <div id="result-details" class="result-details">
                     <!-- 結果詳細 -->
                 </div>
-                <button id="return-to-lobby-btn" class="btn btn-primary">ロビーに戻る</button>
+                <button id="return-to-lobby-btn" class="btn btn-primary">ホームに戻る</button>
             </div>
         </div>
     </div>
 
-        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-        <script src="client-config.js"></script>
-        <script src="game-client.js"></script>
-        
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="client-config.js"></script>
+    <script src="game-client.js"></script>
 </body>
 </html>

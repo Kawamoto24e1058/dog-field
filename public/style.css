@@ -80,8 +80,11 @@ body::after {
     margin: 0 auto;
 }
 
-/* スタート画面: 左右2カラム */
-.start-hero {
+/* スタート画面コンテナ */
+.start-container {
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
     display: grid;
     grid-template-columns: minmax(340px, 1.3fr) minmax(320px, 1fr);
     gap: 28px;
@@ -636,6 +639,82 @@ input[type="text"]:focus {
 
 .screen.active {
     display: block;
+}
+
+/* マッチング待機画面 */
+.matching-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 28px;
+}
+
+.matching-content {
+    background: linear-gradient(135deg, rgba(20, 26, 47, 0.95), rgba(15, 18, 35, 0.95));
+    border: 2px solid rgba(0, 255, 200, 0.30);
+    border-radius: 24px;
+    padding: 50px 40px;
+    box-shadow: 0 0 40px rgba(0, 255, 200, 0.15), inset 0 0 30px rgba(0, 255, 200, 0.05);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+.matching-icon {
+    font-size: 4em;
+    margin-bottom: 16px;
+    display: inline-block;
+    animation: pulse-icon 1s ease-in-out infinite;
+}
+
+@keyframes pulse-icon {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.matching-title {
+    font-size: 2em;
+    color: #f0f7ff;
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+    text-shadow: 0 0 12px rgba(0, 200, 255, 0.2);
+}
+
+.matching-spinner {
+    width: 50px;
+    height: 50px;
+    margin: 20px auto;
+    border: 3px solid rgba(0, 255, 200, 0.20);
+    border-top-color: rgba(0, 255, 200, 0.80);
+    border-radius: 50%;
+    animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.matching-keyword-display {
+    font-size: 1.1em;
+    color: #a5f3fc;
+    margin: 20px 0;
+    padding: 12px;
+    background: rgba(0, 200, 220, 0.08);
+    border: 1px solid rgba(0, 200, 255, 0.20);
+    border-radius: 12px;
+    text-shadow: 0 0 6px rgba(0, 200, 255, 0.3);
+}
+
+.matching-status {
+    font-size: 1em;
+    color: #cfd6ee;
+    margin: 16px 0 24px;
+    min-height: 2em;
+}
+
+.matching-content .btn-secondary {
+    width: 100%;
 }
 
 /* レスポンシブ */

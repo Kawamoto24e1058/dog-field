@@ -12,7 +12,8 @@ class GameClient {
     
     // UI要素
     this.screens = {
-      lobby: document.getElementById('lobby-screen'),
+      start: document.getElementById('start-screen'),
+      matching: document.getElementById('matching-screen'),
       game: document.getElementById('game-screen'),
       gameOver: document.getElementById('game-over-screen')
     };
@@ -36,17 +37,19 @@ class GameClient {
    * イベントリスナー設定
    */
   setupEventListeners() {
-    // ロビー画面
+    // スタート画面
     document.getElementById('start-btn').addEventListener('click', () => this.startMatchFlow());
-    document.getElementById('cancel-search-btn').addEventListener('click', () => this.cancelSearch());
+    
+    // マッチング待機画面
+    document.getElementById('cancel-matching-btn').addEventListener('click', () => this.cancelMatching());
     
     // ゲーム画面
     document.getElementById('surrender-btn').addEventListener('click', () => this.surrender());
     
     // ゲーム終了画面
-    document.getElementById('return-to-lobby-btn').addEventListener('click', () => this.returnToLobby());
+    document.getElementById('return-to-lobby-btn').addEventListener('click', () => this.returnToHome());
 
-    // ニックネーム入力
+    // ニックネーム入力でEnter
     document.getElementById('nickname-input').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') this.startMatchFlow();
     });
@@ -72,25 +75,24 @@ class GameClient {
       this.playerId = data.playerId;
       this.nickname = data.nickname;
       console.log(`✅ ゲーム参加: ${this.nickname}`);
-      this.showLobbyGame();
 
-       // スタート要求が残っていれば即検索
+       // スタート要求が残っていれば即マッチング待機画面へ
        if (this.startRequested) {
-         this.searchMatch(this.pendingKeyword);
+         this.searchMatchAndShowWaiting(this.pendingKeyword);
          this.startRequested = false;
        }
     });
 
     // ロビー更新
     this.socket.on('lobby_update', (data) => {
-      this.updateLobbyPlayers(data.activePlayers);
-      document.getElementById('search-status').textContent = `待機中 (${data.waitingCount}人)`;
-      this.updateWaitingKeywords(data.keywords || []);
+      // マッチング待機画面では表示しない
     });
 
     // マッチング検索状態
     this.socket.on('search_status', (data) => {
-      this.setSearchingUI(true, this.pendingKeyword, data.message);
+      if (this.screens.matching.classList.contains('active')) {
+        this.updateMatchingStatus(data.message);
+      }
     });
 
     // マッチング検索キャンセル
@@ -107,6 +109,8 @@ class GameClient {
       const self = data.players.find(p => p.id === this.playerId);
       this.playerRole = self.role;
 
+      // マッチング画面を隠す、ゲーム画面を表示
+      this.showScreen('game');
       this.startGame(data);
     });
 
@@ -148,7 +152,7 @@ class GameClient {
    * ロビーゲーム画面表示
    */
   showLobbyGame() {
-    document.getElementById('players-section').style.display = 'block';
+    // 不要（マッチング待機画面に置き換え）
   }
 
   /**
@@ -181,20 +185,19 @@ class GameClient {
       localStorage.removeItem('df_keyword');
     }
     this.pendingKeyword = keyword;
-    this.setSearchingUI(true, keyword);
     this.socket.emit('search_match', { keyword });
   }
 
   /**
    * マッチング検索キャンセル
    */
-  cancelSearch() {
+  cancelMatching() {
     this.socket.emit('cancel_search');
-    this.setSearchingUI(false);
+    this.showScreen('start');
   }
 
   /**
-   * スタートフロー: ニックネーム＋キーワードで join → search
+   * スタートフロー: ニックネーム＋キーワードで join → search → マッチング待機画面へ
    */
   startMatchFlow() {
     const nicknameInput = document.getElementById('nickname-input');
@@ -215,54 +218,48 @@ class GameClient {
       return;
     }
 
-    // 既に参加済みなら即検索
-    this.searchMatch(keyword);
+    // 既に参加済みなら即検索＋マッチング待機画面へ
+    this.searchMatchAndShowWaiting(keyword);
+  }
+
+  /**
+   * マッチング検索して待機画面を表示
+   */
+  searchMatchAndShowWaiting(keyword) {
+    this.pendingKeyword = keyword;
+    // マッチング待機画面を表示
+    this.showScreen('matching');
+    
+    // キーワード表示を更新
+    const displayKeyword = keyword || 'any';
+    document.getElementById('matching-keyword-display').innerHTML = `合言葉: <strong>${displayKeyword}</strong>`;
+    document.getElementById('matching-status').textContent = '対手を探しています';
+    
+    // 検索開始
+    this.socket.emit('search_match', { keyword });
   }
 
   setSearchingUI(isSearching, keyword = '', message = '') {
     const startBtn = document.getElementById('start-btn');
-    const cancelBtn = document.getElementById('cancel-search-btn');
-    const status = document.getElementById('search-status');
     const nicknameInput = document.getElementById('nickname-input');
     const keywordInput = document.getElementById('keyword-input');
 
     if (isSearching) {
       startBtn.disabled = true;
-      cancelBtn.style.display = 'inline-flex';
-      status.textContent = message || `キーワード: ${keyword || 'any'} で検索中...`;
       nicknameInput.disabled = true;
       keywordInput.disabled = true;
     } else {
       startBtn.disabled = false;
-      cancelBtn.style.display = 'none';
-      status.textContent = '待機中...';
       nicknameInput.disabled = false;
       keywordInput.disabled = false;
     }
   }
 
   /**
-   * 待機中キーワード表示
+   * マッチング待機画面のステータス更新
    */
-  updateWaitingKeywords(keywords) {
-    const box = document.getElementById('waiting-keywords');
-    if (!keywords || keywords.length === 0) {
-      box.textContent = '待機中のキーワードはありません';
-      return;
-    }
-
-    // 集計
-    const counts = keywords.reduce((acc, k) => {
-      acc[k] = (acc[k] || 0) + 1;
-      return acc;
-    }, {});
-
-    const sorted = Object.entries(counts)
-      .sort((a, b) => b[1] - a[1])
-      .map(([k, v]) => `${k} (${v})`)
-      .join(' / ');
-
-    box.textContent = `待機キーワード: ${sorted}`;
+  updateMatchingStatus(message) {
+    document.getElementById('matching-status').textContent = message || '対手を探しています';
   }
 
   /**
@@ -270,10 +267,6 @@ class GameClient {
    */
   startGame(data) {
     console.log('🎮 ゲーム開始:', data);
-
-    // UI切り替え: ロビーを隠す、ゲーム画面を表示
-    this.screens.lobby.classList.remove('active');
-    this.screens.game.classList.add('active');
 
     // プレイヤー情報設定
     const opponent = data.players.find(p => p.id !== this.playerId);
@@ -449,17 +442,15 @@ class GameClient {
     `;
 
     // UI切り替え: ゲーム画面を隠す、終了画面を表示
-    this.screens.game.classList.remove('active');
-    this.screens.gameOver.classList.add('active');
+    this.showScreen('gameOver');
   }
 
   /**
-   * ロビーに戻る
+   * ホームに戻る
    */
-  returnToLobby() {
-    // UI切り替え: 終了画面を隠す、ロビーを表示
-    this.screens.gameOver.classList.remove('active');
-    this.screens.lobby.classList.add('active');
+  returnToHome() {
+    // UI切り替え: 終了画面を隠す、スタート画面を表示
+    this.showScreen('start');
     
     // ゲーム状態をリセット
     this.gameState = null;
@@ -468,12 +459,9 @@ class GameClient {
     
     clearInterval(this.turnTimer);
 
-    // ロビー状態リセット
-    document.getElementById('cancel-search-btn').style.display = 'none';
-    document.getElementById('search-status').textContent = '待機中...';
-    
-    // プレイヤー情報はリロード、または再度 join_game を呼ぶ場合
-    // このまま検索できるようにする場合、playerId を保持
+    // スタート画面の入力をクリア
+    document.getElementById('nickname-input').value = '';
+    // キーワードは保持
   }
 
   /**
@@ -492,6 +480,12 @@ class GameClient {
    * スクリーン表示/非表示
    */
   showScreen(screenName) {
+    // 全スクリーンを非表示
+    Object.values(this.screens).forEach(screen => {
+      if (screen) screen.classList.remove('active');
+    });
+    
+    // 指定スクリーンのみ表示
     if (this.screens[screenName]) {
       this.screens[screenName].classList.add('active');
     }
