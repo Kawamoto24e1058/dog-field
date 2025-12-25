@@ -7,14 +7,48 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 body {
-    font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
-    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.05), transparent 28%),
-                radial-gradient(circle at 78% 10%, rgba(94,234,212,0.10), transparent 32%),
-                radial-gradient(circle at 52% 78%, rgba(59,130,246,0.10), transparent 34%),
-                #0c1224;
+        font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+        background: #0b1222;
     color: #e9edf7;
     min-height: 100vh;
     padding: 28px;
+}
+
+/* 背景: メッシュグラデーション + グリッドの微細な重ね合わせ */
+body::before {
+        content: "";
+        position: fixed;
+        inset: -30% -30% -30% -30%;
+        background:
+            radial-gradient(800px 800px at 12% 18%, rgba(94,234,212,0.18), transparent 60%),
+            radial-gradient(900px 900px at 82% 12%, rgba(96,165,250,0.16), transparent 62%),
+            radial-gradient(850px 850px at 46% 78%, rgba(34,197,94,0.14), transparent 64%),
+            conic-gradient(from 180deg at 50% 50%, rgba(96,165,250,0.22), rgba(34,197,94,0.18), rgba(94,234,212,0.18), rgba(96,165,250,0.22));
+        filter: blur(42px);
+        opacity: 0.65;
+        animation: aurora 18s ease-in-out infinite alternate;
+        pointer-events: none;
+        z-index: -2;
+}
+
+body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 24px 24px, 24px 24px;
+        mix-blend-mode: soft-light;
+        opacity: 0.35;
+        pointer-events: none;
+        z-index: -1;
+}
+
+@keyframes aurora {
+    0% { transform: translate3d(-1.5%, -1.5%, 0) scale(1.02); filter: blur(42px) hue-rotate(0deg); }
+    50% { transform: translate3d(1.2%, 0.8%, 0) scale(1.03); filter: blur(46px) hue-rotate(8deg); }
+    100% { transform: translate3d(0%, 1.5%, 0) scale(1.02); filter: blur(42px) hue-rotate(-6deg); }
 }
 
 .container {
@@ -93,6 +127,18 @@ body {
     position: relative;
     overflow: hidden;
 }
+.hero-card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: 22px;
+    padding: 1px;
+    background: linear-gradient(120deg, rgba(96,165,250,0.25), rgba(34,197,94,0.20));
+    -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+}
 .hero-body { position: relative; z-index: 1; }
 .hero-scene {
         position: absolute;
@@ -152,7 +198,7 @@ body {
 }
 
 .hero-text h2 {
-    font-size: 2.2em;
+    font-size: 2.35em;
     color: #f3f6ff;
     margin-bottom: 8px;
     letter-spacing: -0.01em;
@@ -626,6 +672,10 @@ input[type="text"]:focus {
     font-weight: 700;
     letter-spacing: 0.01em;
     box-shadow: 0 10px 24px rgba(52, 211, 153, 0.26);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .btn:hover:not(:disabled) {
@@ -646,8 +696,20 @@ input[type="text"]:focus {
 }
 
 .btn-primary.large {
-    padding: 16px 22px;
-    font-size: 1.1em;
+    padding: 18px 26px;
+    font-size: 1.12em;
+}
+
+.btn-icon {
+    display: inline-block;
+    width: 1.2em;
+    height: 1.2em;
+    line-height: 1.2em;
+    text-align: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.85);
+    color: #0b1021;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.25);
 }
 
 .btn-secondary {

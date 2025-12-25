@@ -56,7 +56,7 @@
                                 <div id="keyword-hint" class="keyword-hint">未設定なら誰とでもマッチ（any）</div>
                             </div>
                             <div class="form-actions">
-                                <button id="start-btn" class="btn btn-primary large pulse">マッチ開始</button>
+                                <button id="start-btn" class="btn btn-primary large pulse"><span class="btn-icon">▶</span> マッチ開始</button>
                                 <button id="cancel-search-btn" class="btn btn-secondary ghost" style="display: none;">検索キャンセル</button>
                                 <div id="search-status" class="search-status">待機中...</div>
                                 <div id="waiting-keywords" class="waiting-keywords"></div>
@@ -148,24 +148,6 @@
         <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
         <script src="client-config.js"></script>
         <script src="game-client.js"></script>
-        <script>
-            // 軽いチルト効果でゲーム感を演出
-            (function(){
-                const card = document.getElementById('hero-card');
-                if (!card) return;
-                const maxTilt = 6; // degrees
-                card.addEventListener('mousemove', (e) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = (e.clientX - rect.left) / rect.width - 0.5;
-                    const y = (e.clientY - rect.top) / rect.height - 0.5;
-                    const rotateX = (-y * maxTilt).toFixed(2);
-                    const rotateY = (x * maxTilt).toFixed(2);
-                    card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-                });
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
-                });
-            })();
-        </script>
+        
 </body>
 </html>
