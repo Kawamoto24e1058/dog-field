@@ -23,6 +23,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
     .player-item {
@@ -48,9 +49,10 @@ body {
     background: rgba(255, 255, 255, 0.04);
     border-radius: 24px;
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.45);
-    padding: 36px;
-    max-width: 1100px;
-    margin: 28px auto;
+    padding: 40px;
+    max-width: 1080px;
+    width: 100%;
+    margin: 24px auto;
     border: 1px solid rgba(255,255,255,0.06);
     backdrop-filter: blur(12px);
 }
@@ -73,9 +75,13 @@ body {
 }
 
 .lobby-content {
+    width: 100%;
+    max-width: 980px;
+    margin: 0 auto;
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: minmax(360px, 1.5fr) minmax(260px, 1fr);
     gap: 24px;
+    align-items: start;
 }
 
 .hero-card {
@@ -84,6 +90,20 @@ body {
     padding: 24px;
     border: 1px solid rgba(255,255,255,0.08);
     box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-card::after {
+    content: "";
+    position: absolute;
+    top: -80px;
+    right: -60px;
+    width: 240px;
+    height: 240px;
+    background: radial-gradient(circle, rgba(56,189,248,0.25), transparent 60%);
+    filter: blur(6px);
+    pointer-events: none;
 }
 
 .hero-text .eyebrow {
@@ -146,12 +166,17 @@ input[type="text"]:focus {
     gap: 10px;
 }
 
+.form-actions .btn-primary {
+    width: 100%;
+}
+
 .players-section {
     background: rgba(255, 255, 255, 0.04);
     padding: 20px;
     border-radius: 16px;
     border: 1px solid rgba(255,255,255,0.08);
     box-shadow: 0 14px 38px rgba(0,0,0,0.32);
+    height: 100%;
 }
 
 .players-section h2 {
@@ -619,6 +644,15 @@ input[type="text"]:focus {
     #game-screen,
     #game-over-screen {
         padding: 20px;
+    }
+
+    .lobby-content {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
     }
 
     .game-header {
