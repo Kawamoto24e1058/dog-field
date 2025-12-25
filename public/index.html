@@ -11,12 +11,29 @@
         <!-- ロビー画面 -->
         <div id="lobby-screen" class="screen active">
             <div class="lobby-content">
-                <div class="hero-card">
+                <div class="hero-card" id="hero-card">
+                    <div class="hero-scene" aria-hidden="true">
+                        <span class="floating f1">🃏</span>
+                        <span class="floating f2">⚔️</span>
+                        <span class="floating f3">🛡️</span>
+                        <span class="floating f4">❤️</span>
+                        <span class="floating f5">🐕</span>
+                    </div>
                     <div class="hero-body">
                         <div class="hero-text">
+                            <div class="brand-row">
+                                <span class="brand-icon">🐕</span>
+                                <span class="brand-title gradient-text">Dog Field</span>
+                            </div>
                             <p class="eyebrow">Ready to battle</p>
                             <h2>ニックネームと合言葉で即マッチ</h2>
                             <p class="subhead">同じ合言葉のプレイヤー同士で自動マッチング。空欄なら誰とでも。</p>
+                            <div class="badge-list">
+                                <span class="badge"><span class="emoji">⚔️</span> オンライン対戦</span>
+                                <span class="badge"><span class="emoji">⏱️</span> ターン制</span>
+                                <span class="badge"><span class="emoji">🔑</span> 合言葉マッチ</span>
+                                <span class="badge"><span class="emoji">🆓</span> 無料</span>
+                            </div>
                         </div>
                         <div class="form-grid">
                             <div class="form-group">
@@ -39,7 +56,7 @@
                                 <div id="keyword-hint" class="keyword-hint">未設定なら誰とでもマッチ（any）</div>
                             </div>
                             <div class="form-actions">
-                                <button id="start-btn" class="btn btn-primary large">マッチ開始</button>
+                                <button id="start-btn" class="btn btn-primary large pulse">マッチ開始</button>
                                 <button id="cancel-search-btn" class="btn btn-secondary ghost" style="display: none;">検索キャンセル</button>
                                 <div id="search-status" class="search-status">待機中...</div>
                                 <div id="waiting-keywords" class="waiting-keywords"></div>
@@ -55,11 +72,6 @@
                     </div>
                 </div>
             </div>
-                    <div id="search-status" class="search-status">待機中...</div>
-                    <div id="waiting-keywords" class="waiting-keywords"></div>
-                    <button id="search-btn" class="btn btn-primary">クイックマッチ</button>
-                    <button id="cancel-search-btn" class="btn btn-secondary" style="display: none;">検索キャンセル</button>
-                </div>
             </div>
         </div>
 
@@ -133,8 +145,27 @@
         </div>
     </div>
 
-    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <script src="client-config.js"></script>
-    <script src="game-client.js"></script>
+        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+        <script src="client-config.js"></script>
+        <script src="game-client.js"></script>
+        <script>
+            // 軽いチルト効果でゲーム感を演出
+            (function(){
+                const card = document.getElementById('hero-card');
+                if (!card) return;
+                const maxTilt = 6; // degrees
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+                    const rotateX = (-y * maxTilt).toFixed(2);
+                    const rotateY = (x * maxTilt).toFixed(2);
+                    card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
+                });
+            })();
+        </script>
 </body>
 </html>
