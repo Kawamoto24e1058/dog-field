@@ -10,21 +10,42 @@
     <div class="container">
         <!-- ロビー画面 -->
         <div id="lobby-screen" class="screen active">
-            <header class="lobby-header">
-                <h1>🐕 Dog Field</h1>
-                <p>ターン制オンライン対戦カードゲーム</p>
-            </header>
-
             <div class="lobby-content">
-                <div class="join-section">
-                    <h2>ゲームに参加</h2>
-                    <input 
-                        type="text" 
-                        id="nickname-input" 
-                        placeholder="ニックネーム"
-                        maxlength="20"
-                    >
-                    <button id="join-btn" class="btn btn-primary">参加</button>
+                <div class="hero-card">
+                    <div class="hero-body">
+                        <div class="hero-text">
+                            <p class="eyebrow">Ready to battle</p>
+                            <h2>ニックネームと合言葉で即マッチ</h2>
+                            <p class="subhead">同じ合言葉のプレイヤー同士で自動マッチング。空欄なら誰とでも。</p>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="nickname-input">ニックネーム</label>
+                                <input 
+                                    type="text" 
+                                    id="nickname-input" 
+                                    placeholder="例: Luna"
+                                    maxlength="20"
+                                >
+                            </div>
+                            <div class="form-group">
+                                <label for="keyword-input">合言葉（任意）</label>
+                                <input 
+                                    type="text" 
+                                    id="keyword-input" 
+                                    placeholder="例: 1234 / dog / friends"
+                                    maxlength="20"
+                                >
+                                <div id="keyword-hint" class="keyword-hint">未設定なら誰とでもマッチ（any）</div>
+                            </div>
+                            <div class="form-actions">
+                                <button id="start-btn" class="btn btn-primary large">マッチ開始</button>
+                                <button id="cancel-search-btn" class="btn btn-secondary ghost" style="display: none;">検索キャンセル</button>
+                                <div id="search-status" class="search-status">待機中...</div>
+                                <div id="waiting-keywords" class="waiting-keywords"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="players-section" class="players-section" style="display: none;">
@@ -33,17 +54,9 @@
                         <!-- プレイヤーリスト -->
                     </div>
                 </div>
-
-                <div id="search-section" class="search-section" style="display: none;">
-                    <h2>マッチング</h2>
-                    <label for="keyword-input" class="keyword-label">キーワード（同じキーワード同士でマッチ）</label>
-                    <input 
-                        type="text" 
-                        id="keyword-input" 
-                        placeholder="例: 1234 / dog / 友だちの合言葉"
-                        maxlength="20"
-                    >
+            </div>
                     <div id="search-status" class="search-status">待機中...</div>
+                    <div id="waiting-keywords" class="waiting-keywords"></div>
                     <button id="search-btn" class="btn btn-primary">クイックマッチ</button>
                     <button id="cancel-search-btn" class="btn btn-secondary" style="display: none;">検索キャンセル</button>
                 </div>

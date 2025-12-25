@@ -18,6 +18,8 @@ class GameClient {
     };
 
     this.turnTimer = null;
+    this.startRequested = false;
+    this.pendingKeyword = '';
 
     this.init();
   }
@@ -35,8 +37,7 @@ class GameClient {
    */
   setupEventListeners() {
     // ロビー画面
-    document.getElementById('join-btn').addEventListener('click', () => this.joinGame());
-    document.getElementById('search-btn').addEventListener('click', () => this.searchMatch());
+    document.getElementById('start-btn').addEventListener('click', () => this.startMatchFlow());
     document.getElementById('cancel-search-btn').addEventListener('click', () => this.cancelSearch());
     
     // ゲーム画面
@@ -47,8 +48,14 @@ class GameClient {
 
     // ニックネーム入力
     document.getElementById('nickname-input').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') this.joinGame();
+      if (e.key === 'Enter') this.startMatchFlow();
     });
+
+    // 前回のキーワードを復元
+    const savedKeyword = localStorage.getItem('df_keyword');
+    if (savedKeyword) {
+      document.getElementById('keyword-input').value = savedKeyword;
+    }
   }
 
   /**
@@ -66,26 +73,29 @@ class GameClient {
       this.nickname = data.nickname;
       console.log(`✅ ゲーム参加: ${this.nickname}`);
       this.showLobbyGame();
+
+       // スタート要求が残っていれば即検索
+       if (this.startRequested) {
+         this.searchMatch(this.pendingKeyword);
+         this.startRequested = false;
+       }
     });
 
     // ロビー更新
     this.socket.on('lobby_update', (data) => {
       this.updateLobbyPlayers(data.activePlayers);
       document.getElementById('search-status').textContent = `待機中 (${data.waitingCount}人)`;
+      this.updateWaitingKeywords(data.keywords || []);
     });
 
     // マッチング検索状態
     this.socket.on('search_status', (data) => {
-      document.getElementById('search-status').textContent = data.message;
-      document.getElementById('search-btn').style.display = 'none';
-      document.getElementById('cancel-search-btn').style.display = 'block';
+      this.setSearchingUI(true, this.pendingKeyword, data.message);
     });
 
     // マッチング検索キャンセル
     this.socket.on('search_cancelled', () => {
-      document.getElementById('search-btn').style.display = 'block';
-      document.getElementById('cancel-search-btn').style.display = 'none';
-      document.getElementById('search-status').textContent = '待機中...';
+      this.setSearchingUI(false);
     });
 
     // マッチ開始
@@ -135,28 +145,10 @@ class GameClient {
   }
 
   /**
-   * ゲーム参加
-   */
-  joinGame() {
-    const nicknameInput = document.getElementById('nickname-input');
-    const nickname = nicknameInput.value.trim() || 'Player';
-
-    if (nickname.length > 20) {
-      alert('ニックネームは20文字以内です');
-      return;
-    }
-
-    this.socket.emit('join_game', { nickname });
-  }
-
-  /**
    * ロビーゲーム画面表示
    */
   showLobbyGame() {
     document.getElementById('players-section').style.display = 'block';
-    document.getElementById('search-section').style.display = 'block';
-    document.getElementById('join-btn').disabled = true;
-    document.getElementById('nickname-input').disabled = true;
   }
 
   /**
@@ -180,9 +172,16 @@ class GameClient {
   /**
    * マッチング検索
    */
-  searchMatch() {
+  searchMatch(keywordArg) {
     const keywordInput = document.getElementById('keyword-input');
-    const keyword = (keywordInput.value || '').trim().slice(0, 20);
+    const keyword = (keywordArg ?? keywordInput.value || '').trim().slice(0, 20);
+    if (keyword) {
+      localStorage.setItem('df_keyword', keyword);
+    } else {
+      localStorage.removeItem('df_keyword');
+    }
+    this.pendingKeyword = keyword;
+    this.setSearchingUI(true, keyword);
     this.socket.emit('search_match', { keyword });
   }
 
@@ -191,6 +190,79 @@ class GameClient {
    */
   cancelSearch() {
     this.socket.emit('cancel_search');
+    this.setSearchingUI(false);
+  }
+
+  /**
+   * スタートフロー: ニックネーム＋キーワードで join → search
+   */
+  startMatchFlow() {
+    const nicknameInput = document.getElementById('nickname-input');
+    const nickname = nicknameInput.value.trim() || 'Player';
+    const keywordInput = document.getElementById('keyword-input');
+    const keyword = (keywordInput.value || '').trim().slice(0, 20);
+
+    if (nickname.length > 20) {
+      alert('ニックネームは20文字以内です');
+      return;
+    }
+
+    this.pendingKeyword = keyword;
+
+    if (!this.playerId) {
+      this.startRequested = true;
+      this.socket.emit('join_game', { nickname });
+      return;
+    }
+
+    // 既に参加済みなら即検索
+    this.searchMatch(keyword);
+  }
+
+  setSearchingUI(isSearching, keyword = '', message = '') {
+    const startBtn = document.getElementById('start-btn');
+    const cancelBtn = document.getElementById('cancel-search-btn');
+    const status = document.getElementById('search-status');
+    const nicknameInput = document.getElementById('nickname-input');
+    const keywordInput = document.getElementById('keyword-input');
+
+    if (isSearching) {
+      startBtn.disabled = true;
+      cancelBtn.style.display = 'inline-flex';
+      status.textContent = message || `キーワード: ${keyword || 'any'} で検索中...`;
+      nicknameInput.disabled = true;
+      keywordInput.disabled = true;
+    } else {
+      startBtn.disabled = false;
+      cancelBtn.style.display = 'none';
+      status.textContent = '待機中...';
+      nicknameInput.disabled = false;
+      keywordInput.disabled = false;
+    }
+  }
+
+  /**
+   * 待機中キーワード表示
+   */
+  updateWaitingKeywords(keywords) {
+    const box = document.getElementById('waiting-keywords');
+    if (!keywords || keywords.length === 0) {
+      box.textContent = '待機中のキーワードはありません';
+      return;
+    }
+
+    // 集計
+    const counts = keywords.reduce((acc, k) => {
+      acc[k] = (acc[k] || 0) + 1;
+      return acc;
+    }, {});
+
+    const sorted = Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([k, v]) => `${k} (${v})`)
+      .join(' / ');
+
+    box.textContent = `待機キーワード: ${sorted}`;
   }
 
   /**

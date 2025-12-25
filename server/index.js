@@ -75,8 +75,17 @@ io.on('connection', (socket) => {
 
     console.log(`🔍 マッチング検索: ${session.nickname} keyword=${keyword}`);
 
-    // マッチング相手がいる場合
-    const opponentIndex = waitingQueue.findIndex(p => p.keyword === keyword);
+    // マッチング相手探索の優先順位:
+    // 1) 完全一致
+    // 2) 片方が any
+    let opponentIndex = waitingQueue.findIndex(p => p.keyword === keyword);
+    if (opponentIndex === -1 && keyword !== 'any') {
+      opponentIndex = waitingQueue.findIndex(p => p.keyword === 'any');
+    }
+    if (opponentIndex === -1 && keyword === 'any') {
+      opponentIndex = waitingQueue.findIndex(() => true); // 先頭
+    }
+
     if (opponentIndex !== -1) {
       const opponent = waitingQueue.splice(opponentIndex, 1)[0];
       startMatch(playerId, opponent.playerId);
