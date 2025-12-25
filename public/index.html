@@ -11,65 +11,38 @@
         <!-- ロビー画面 -->
         <div id="lobby-screen" class="screen active">
             <div class="lobby-content">
-                <div class="hero-card" id="hero-card">
-                    <div class="hero-scene" aria-hidden="true">
-                        <span class="floating f1">🃏</span>
-                        <span class="floating f2">⚔️</span>
-                        <span class="floating f3">🛡️</span>
-                        <span class="floating f4">❤️</span>
-                        <span class="floating f5">🐕</span>
-                    </div>
-                    <div class="hero-body">
-                        <div class="hero-text">
-                            <div class="brand-row">
-                                <span class="brand-icon">🐕</span>
-                                <span class="brand-title gradient-text">Dog Field</span>
-                            </div>
-                            <p class="eyebrow">Ready to battle</p>
-                            <h2>ニックネームと合言葉で即マッチ</h2>
-                            <p class="subhead">同じ合言葉のプレイヤー同士で自動マッチング。空欄なら誰とでも。</p>
-                            <div class="badge-list">
-                                <span class="badge"><span class="emoji">⚔️</span> オンライン対戦</span>
-                                <span class="badge"><span class="emoji">⏱️</span> ターン制</span>
-                                <span class="badge"><span class="emoji">🔑</span> 合言葉マッチ</span>
-                                <span class="badge"><span class="emoji">🆓</span> 無料</span>
-                            </div>
+                <div class="start-hero">
+                    <section class="start-copy">
+                        <div class="brand-row">
+                            <span class="brand-icon">🐕</span>
+                            <span class="brand-title gradient-text">Dog Field</span>
                         </div>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="nickname-input">ニックネーム</label>
-                                <input 
-                                    type="text" 
-                                    id="nickname-input" 
-                                    placeholder="例: Luna"
-                                    maxlength="20"
-                                >
-                            </div>
-                            <div class="form-group">
-                                <label for="keyword-input">合言葉（任意）</label>
-                                <input 
-                                    type="text" 
-                                    id="keyword-input" 
-                                    placeholder="例: 1234 / dog / friends"
-                                    maxlength="20"
-                                >
-                                <div id="keyword-hint" class="keyword-hint">未設定なら誰とでもマッチ（any）</div>
-                            </div>
-                            <div class="form-actions">
-                                <button id="start-btn" class="btn btn-primary large pulse"><span class="btn-icon">▶</span> マッチ開始</button>
-                                <button id="cancel-search-btn" class="btn btn-secondary ghost" style="display: none;">検索キャンセル</button>
-                                <div id="search-status" class="search-status">待機中...</div>
-                                <div id="waiting-keywords" class="waiting-keywords"></div>
-                            </div>
+                        <h1 class="start-headline">ニックネームと合言葉で、すぐに対戦へ。</h1>
+                        <p class="start-subtitle">同じ合言葉のプレイヤー同士で自動マッチ。空欄なら誰とでも。</p>
+                        <div class="badge-list" aria-hidden="true">
+                            <span class="badge"><span class="emoji">⚔️</span> オンライン対戦</span>
+                            <span class="badge"><span class="emoji">⏱️</span> ターン制</span>
+                            <span class="badge"><span class="emoji">🔑</span> 合言葉マッチ</span>
+                            <span class="badge"><span class="emoji">🆓</span> 無料</span>
                         </div>
-                    </div>
-                </div>
-
-                <div id="players-section" class="players-section" style="display: none;">
-                    <h2>オンラインプレイヤー</h2>
-                    <div id="players-list" class="players-list">
-                        <!-- プレイヤーリスト -->
-                    </div>
+                    </section>
+                    <aside class="start-panel">
+                        <div class="field-group">
+                            <label for="nickname-input">ニックネーム</label>
+                            <input type="text" id="nickname-input" placeholder="例: Luna" maxlength="20">
+                        </div>
+                        <div class="field-group">
+                            <label for="keyword-input">合言葉（任意）</label>
+                            <input type="text" id="keyword-input" placeholder="例: 1234 / dog / friends" maxlength="20">
+                            <div id="keyword-hint" class="keyword-hint">未設定なら誰とでもマッチ（any）</div>
+                        </div>
+                        <div class="cta-row">
+                            <button id="start-btn" class="btn btn-primary large pulse"><span class="btn-icon">▶</span> マッチ開始</button>
+                            <button id="cancel-search-btn" class="btn btn-secondary ghost" style="display: none;">検索キャンセル</button>
+                            <div id="search-status" class="search-status">待機中...</div>
+                            <div id="waiting-keywords" class="waiting-keywords"></div>
+                        </div>
+                    </aside>
                 </div>
             </div>
             </div>

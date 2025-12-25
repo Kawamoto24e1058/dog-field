@@ -32,36 +32,114 @@ body::before {
 }
 
 body::after {
-        content: "";
-        position: fixed;
-        inset: 0;
-        background-image:
-            linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-        background-size: 24px 24px, 24px 24px;
-        mix-blend-mode: soft-light;
-        opacity: 0.35;
-        pointer-events: none;
-        z-index: -1;
-}
-
-@keyframes aurora {
-    0% { transform: translate3d(-1.5%, -1.5%, 0) scale(1.02); filter: blur(42px) hue-rotate(0deg); }
-    50% { transform: translate3d(1.2%, 0.8%, 0) scale(1.03); filter: blur(46px) hue-rotate(8deg); }
-    100% { transform: translate3d(0%, 1.5%, 0) scale(1.02); filter: blur(42px) hue-rotate(-6deg); }
-}
-
-.container {
-    max-width: 1200px;
+    width: 100%;
+    max-width: 1080px;
     margin: 0 auto;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+}
+/* 新スタート画面 */
+.start-hero {
+    display: grid;
+    grid-template-columns: minmax(320px, 1.3fr) minmax(320px, 1fr);
+    gap: 28px;
+    align-items: stretch;
+    position: relative;
+}
+.start-hero::before,
+.start-hero::after {
+    content: "";
+    position: absolute;
+    filter: blur(28px);
+    opacity: 0.45;
+    pointer-events: none;
+}
+.start-hero::before {
+    top: -40px;
+    left: -60px;
+    width: 360px;
+    height: 360px;
+    background: radial-gradient(closest-side, rgba(96,165,250,0.35), transparent 70%);
+}
+.start-hero::after {
+    bottom: -60px;
+    right: -40px;
+    width: 420px;
+    height: 420px;
+    background: radial-gradient(closest-side, rgba(34,197,94,0.30), transparent 70%);
 }
 
-    .player-item {
-        background: rgba(255, 255, 255, 0.1);
+.start-copy {
+    background: linear-gradient(135deg, rgba(27, 35, 63, 0.92), rgba(18, 25, 48, 0.92));
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 22px;
+    padding: 26px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+
+.brand-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+.brand-icon { font-size: 1.8em; }
+.brand-title {
+    font-size: 2.4em;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+.gradient-text {
+    background: linear-gradient(90deg, #60a5fa, #34d399);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.start-headline {
+    font-size: 2.1em;
+    color: #f3f6ff;
+    letter-spacing: -0.01em;
+}
+.start-subtitle {
+    color: #a9b6d6;
+    margin-top: 6px;
+}
+
+.badge-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0 2px;
+}
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.9em;
+    color: #dbe4ff;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+}
+.badge .emoji { font-size: 1.1em; }
+
+.start-panel {
+    background: linear-gradient(135deg, rgba(27, 35, 63, 0.92), rgba(18, 25, 48, 0.92));
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+
+.field-group label {
+    display: block;
+    color: #cfd6ee;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 0.95em;
+}
+.field-group + .field-group { margin-top: 12px; }
+.cta-row { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
         padding: 12px;
         border-radius: 8px;
         display: flex;
@@ -197,12 +275,7 @@ body::after {
     margin-bottom: 6px;
 }
 
-.hero-text h2 {
-    font-size: 2.35em;
-    color: #f3f6ff;
-    margin-bottom: 8px;
-    letter-spacing: -0.01em;
-}
+/* 既存ヒーローテキストは未使用化（新スタート用を使用） */
 
 .hero-text .subhead {
     color: #a9b6d6;
