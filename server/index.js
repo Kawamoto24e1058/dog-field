@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 // グローバル状態管理
 const gameMatches = new Map(); // matchId -> GameMatch
 const playerSessions = new Map(); // playerId -> { matchId, socketId, nickname }
-const waitingQueue = []; // マッチング待ちプレイヤー
+const waitingQueue = []; // マッチング待ちプレイヤー { playerId, socketId, keyword }
 
 // ═══════════════════════════════════════════════════════════════
 // Socket.io イベントハンドラ
@@ -62,7 +62,7 @@ io.on('connection', (socket) => {
   /**
    * クイックマッチ検索
    */
-  socket.on('search_match', () => {
+  socket.on('search_match', (data = {}) => {
     const playerId = socket.playerId;
     if (!playerId) {
       socket.emit('error', { message: 'Not authenticated' });
@@ -70,16 +70,20 @@ io.on('connection', (socket) => {
     }
 
     const session = playerSessions.get(playerId);
-    console.log(`🔍 マッチング検索: ${session.nickname}`);
+    const rawKeyword = (data.keyword || '').trim();
+    const keyword = rawKeyword.toLowerCase() || 'any';
+
+    console.log(`🔍 マッチング検索: ${session.nickname} keyword=${keyword}`);
 
     // マッチング相手がいる場合
-    if (waitingQueue.length > 0) {
-      const opponent = waitingQueue.shift();
+    const opponentIndex = waitingQueue.findIndex(p => p.keyword === keyword);
+    if (opponentIndex !== -1) {
+      const opponent = waitingQueue.splice(opponentIndex, 1)[0];
       startMatch(playerId, opponent.playerId);
     } else {
       // キューに追加
-      waitingQueue.push({ playerId, socketId: socket.id });
-      socket.emit('search_status', { status: 'searching', message: 'マッチング検索中...' });
+      waitingQueue.push({ playerId, socketId: socket.id, keyword });
+      socket.emit('search_status', { status: 'searching', message: `キーワード: ${keyword} で検索中...` });
     }
 
     broadcastLobbyUpdate();
@@ -288,9 +292,12 @@ function broadcastLobbyUpdate() {
       status: waitingQueue.some(p => p.playerId === id) ? 'searching' : 'idle'
     }));
 
+  const keywords = waitingQueue.map(p => p.keyword);
+
   io.emit('lobby_update', {
     activePlayers,
-    waitingCount: waitingQueue.length
+    waitingCount: waitingQueue.length,
+    keywords
   });
 }
 

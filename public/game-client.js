@@ -181,7 +181,9 @@ class GameClient {
    * マッチング検索
    */
   searchMatch() {
-    this.socket.emit('search_match');
+    const keywordInput = document.getElementById('keyword-input');
+    const keyword = (keywordInput.value || '').trim().slice(0, 20);
+    this.socket.emit('search_match', { keyword });
   }
 
   /**

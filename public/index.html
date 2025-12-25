@@ -36,6 +36,13 @@
 
                 <div id="search-section" class="search-section" style="display: none;">
                     <h2>マッチング</h2>
+                    <label for="keyword-input" class="keyword-label">キーワード（同じキーワード同士でマッチ）</label>
+                    <input 
+                        type="text" 
+                        id="keyword-input" 
+                        placeholder="例: 1234 / dog / 友だちの合言葉"
+                        maxlength="20"
+                    >
                     <div id="search-status" class="search-status">待機中...</div>
                     <button id="search-btn" class="btn btn-primary">クイックマッチ</button>
                     <button id="cancel-search-btn" class="btn btn-secondary" style="display: none;">検索キャンセル</button>
