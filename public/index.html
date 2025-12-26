@@ -73,47 +73,84 @@
 
         <!-- ゲーム画面 -->
         <div id="game-screen" class="screen">
-            <div class="game-header">
-                <div class="player opponent">
-                    <div class="player-label">🔴 相手</div>
-                    <div class="player-name" id="opponent-name">対手</div>
-                    <div class="hp-display">
-                        <div class="hp-bar">
-                            <div id="opponent-hp-fill" class="hp-fill"></div>
+            <!-- プレイヤー情報エリア -->
+            <div class="battle-layout">
+                <!-- 相手プレイヤー -->
+                <div class="battle-player opponent-area">
+                    <div class="player-card">
+                        <div class="player-label-badge opponent-badge">🔴 相手</div>
+                        <div class="player-info">
+                            <div class="player-name-large" id="opponent-name">対手</div>
+                            <div class="player-stats">
+                                <div class="stat-item">
+                                    <span class="stat-icon">🃏</span>
+                                    <span class="stat-value" id="opponent-hand-size">5</span>
+                                </div>
+                            </div>
                         </div>
-                        <span id="opponent-hp-text" class="hp-text">100/100</span>
+                        <div class="hp-section">
+                            <div class="hp-label">
+                                <span>HP</span>
+                                <span class="hp-text" id="opponent-hp-text">100/100</span>
+                            </div>
+                            <div class="hp-bar-container">
+                                <div class="hp-bar-bg">
+                                    <div id="opponent-hp-fill" class="hp-fill opponent-hp"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="hand-size">手札: <span id="opponent-hand-size">5</span></div>
                 </div>
 
-                <div class="game-info">
-                    <div class="turn-info">
-                        <span id="turn-indicator">相手のターン</span>
-                        <div class="turn-timer">
-                            <span id="turn-timer-display">30秒</span>
+                <!-- ターン情報 -->
+                <div class="battle-center">
+                    <div class="turn-display">
+                        <div class="turn-indicator-box">
+                            <div id="turn-indicator" class="turn-text">相手のターン</div>
+                            <div class="turn-timer-box">
+                                <span class="timer-icon">⏱️</span>
+                                <span id="turn-timer-display" class="timer-value">30</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- アクションログ -->
+                    <div class="battle-log">
+                        <div class="log-header">
+                            <span class="log-icon">📜</span>
+                            <span class="log-title">バトルログ</span>
+                        </div>
+                        <div id="action-log-content" class="log-content">
+                            <!-- アクション履歴 -->
                         </div>
                     </div>
                 </div>
 
-                <div class="player player-self">
-                    <div class="player-label">🟢 あなた</div>
-                    <div class="player-name" id="player-name">あなた</div>
-                    <div class="hp-display">
-                        <div class="hp-bar">
-                            <div id="player-hp-fill" class="hp-fill"></div>
+                <!-- 自分プレイヤー -->
+                <div class="battle-player player-area">
+                    <div class="player-card player-self">
+                        <div class="player-label-badge player-badge">🟢 あなた</div>
+                        <div class="player-info">
+                            <div class="player-name-large" id="player-name">あなた</div>
+                            <div class="player-stats">
+                                <div class="stat-item" id="defense-indicator" style="display: none;">
+                                    <span class="stat-icon">🛡️</span>
+                                    <span class="stat-value" id="defense-value">0</span>
+                                </div>
+                            </div>
                         </div>
-                        <span id="player-hp-text" class="hp-text">100/100</span>
+                        <div class="hp-section">
+                            <div class="hp-label">
+                                <span>HP</span>
+                                <span class="hp-text" id="player-hp-text">100/100</span>
+                            </div>
+                            <div class="hp-bar-container">
+                                <div class="hp-bar-bg">
+                                    <div id="player-hp-fill" class="hp-fill player-hp"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="defense-indicator" id="defense-indicator" style="display: none;">
-                        防御: <span id="defense-value">0</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="action-log">
-                <h3>アクション履歴</h3>
-                <div id="action-log-content" class="action-log-content">
-                    <!-- ゲーム開始時の情報 -->
                 </div>
             </div>
 
@@ -129,16 +166,20 @@
                 </div>
             </div>
 
-            <div class="game-board">
-                <div class="hand-section">
-                    <h3>手札</h3>
-                    <div id="hand-cards" class="hand-cards">
-                        <!-- プレイヤーの手札カードが表示される -->
-                    </div>
+            <!-- 手札エリア -->
+            <div class="hand-area">
+                <div class="hand-header">
+                    <h3 class="hand-title">
+                        <span class="hand-icon">🎴</span>
+                        <span>あなたの手札</span>
+                    </h3>
+                </div>
+                <div id="hand-cards" class="hand-cards-grid">
+                    <!-- プレイヤーの手札カードが表示される -->
                 </div>
             </div>
 
-            <div class="controls">
+            <div class="battle-controls">
                 <button id="surrender-btn" class="btn btn-danger">降参</button>
             </div>
         </div>

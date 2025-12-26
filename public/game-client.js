@@ -393,14 +393,14 @@ class GameClient {
 
     if (isMyTurn) {
       document.getElementById('turn-indicator').textContent = '🎬 あなたのターン';
-      document.getElementById('turn-indicator').style.color = '#ff6b6b';
+      document.getElementById('turn-indicator').style.color = '#4ade80';
     } else {
       document.getElementById('turn-indicator').textContent = '⏳ 相手のターン';
-      document.getElementById('turn-indicator').style.color = '#666';
+      document.getElementById('turn-indicator').style.color = '#22d3ee';
     }
 
     // タイマー更新
-    document.getElementById('turn-timer-display').textContent = state.timeRemaining + '秒';
+    document.getElementById('turn-timer-display').textContent = state.timeRemaining || '30';
 
     // アクションログ更新
     this.updateActionLog(state.actionLog);
@@ -421,18 +421,21 @@ class GameClient {
     const playerData = this.gameState.players.find(p => p.role === this.playerRole);
 
      if (!playerData || !playerData.hand || playerData.hand.length === 0) {
-       handContainer.innerHTML = '<p style="text-align: center; color: #999;">カードを引いています...</p>';
+       handContainer.innerHTML = '<p style="text-align: center; color: #999; grid-column: 1 / -1;">カードを引いています...</p>';
        return;
      }
 
-     handContainer.innerHTML = playerData.hand.map(card => `
-       <div class="card-item" data-card-id="${card.id}" style="background-color: ${CARD_COLORS[card.type]};">
+     handContainer.innerHTML = playerData.hand.map(card => {
+       const borderColor = CARD_COLORS[card.type] || '#00d9ff';
+       return `
+       <div class="card" data-card-id="${card.id}" style="border-color: ${borderColor};" onclick="window.gameClient.playCardFromUI('${card.id}')">
          <div class="card-emoji">${card.emoji}</div>
          <div class="card-name">${card.name}</div>
-         <div class="card-cost">⚙️ ${card.cost}</div>
-         <button class="card-btn" onclick="window.gameClient.playCardFromUI('${card.id}')">使用</button>
+         <div class="card-effect">${card.description || ''}</div>
+         <div class="card-cost">コスト ${card.cost}</div>
        </div>
-     `).join('');
+     `;
+     }).join('');
   }
 
   /**
