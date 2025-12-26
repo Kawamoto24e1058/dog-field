@@ -144,5 +144,20 @@
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="client-config.js"></script>
     <script src="game-client.js"></script>
+    <script>
+        // 緊急デバッグ: ページ読み込み確認
+        console.log('🔥 HTML読み込み完了');
+        window.addEventListener('load', () => {
+            console.log('🔥 window.load イベント発火');
+            const btn = document.getElementById('start-btn');
+            console.log('🔥 start-btn:', btn);
+            if (btn) {
+                btn.onclick = function() {
+                    console.log('🔥 ボタンクリック検知（直接onclick）');
+                    alert('ボタンが押されました！');
+                };
+            }
+        });
+    </script>
 </body>
 </html>
