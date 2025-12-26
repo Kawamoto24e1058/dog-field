@@ -216,10 +216,14 @@ class GameClient {
    * スタートフロー: ニックネーム＋キーワードで join → search → マッチング待機画面へ
    */
   startMatchFlow() {
+    console.log('📝 startMatchFlow() 呼び出し');
+    
     const nicknameInput = document.getElementById('nickname-input');
     const nickname = nicknameInput.value.trim() || 'Player';
     const keywordInput = document.getElementById('keyword-input');
     const keyword = (keywordInput.value || '').trim().slice(0, 20);
+
+    console.log('入力:', { nickname, keyword, playerId: this.playerId });
 
     if (nickname.length > 20) {
       alert('ニックネームは20文字以内です');
@@ -235,6 +239,7 @@ class GameClient {
     this.pendingNickname = nickname;
 
     if (!this.playerId) {
+      console.log('未参加状態 → 待機インジケーター表示 + join_game 送信');
       // 未参加なら、まず待機画面を表示（UX向上）
       this.showStartWaiting(keyword);
       this.startRequested = true;
@@ -243,6 +248,7 @@ class GameClient {
       return;
     }
 
+    console.log('既参加状態 → マッチング待機画面へ移動');
     // 既に参加済み → 検索＋マッチング待機画面へ
     this.searchMatchAndShowWaiting(keyword);
   }
@@ -278,13 +284,13 @@ class GameClient {
    * スタート画面の待機インジケーター表示
    */
   showStartWaiting(keyword) {
-    
+    console.log('⏳ showStartWaiting() 呼び出し, keyword:', keyword);
     const el = document.getElementById('start-waiting');
     if (!el) {
-      
+      console.error('❌ #start-waiting 要素が見つかりません');
       return;
     }
-    
+    console.log('✅ #start-waiting 要素見つかり、表示');
     const displayKeyword = keyword || 'any';
     document.getElementById('start-waiting-keyword').innerHTML = `合言葉: <strong>${displayKeyword}</strong>`;
     document.getElementById('start-waiting-status').textContent = '対手を探しています';
@@ -295,13 +301,14 @@ class GameClient {
   }
 
   hideStartWaiting() {
-    
+    console.log('⏹ hideStartWaiting() 呼び出し');
     const el = document.getElementById('start-waiting');
     if (!el) return;
     el.style.display = 'none';
     document.getElementById('nickname-input').disabled = false;
     document.getElementById('keyword-input').disabled = false;
     document.getElementById('start-btn').disabled = false;
+  }
   }
 
   setSearchingUI(isSearching, keyword = '', message = '') {
@@ -578,5 +585,9 @@ class GameClient {
 // ゲーム開始
 window.addEventListener('DOMContentLoaded', () => {
   window.gameClient = new GameClient();
+  console.log('🚀 Dog Field - ゲームクライアント起動完了');
   
+  // デバッグ用: ボタンが実際に存在するか確認
+  const startBtn = document.getElementById('start-btn');
+  console.log('🔘 start-btn 要素:', startBtn ? '見つかった' : '見つからない');
 });
