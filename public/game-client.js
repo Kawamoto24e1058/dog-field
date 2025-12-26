@@ -194,7 +194,7 @@ class GameClient {
    */
   searchMatch(keywordArg) {
     const keywordInput = document.getElementById('keyword-input');
-    const keyword = (keywordArg ?? keywordInput.value || '').trim().slice(0, 20);
+    const keyword = (keywordArg !== undefined ? keywordArg : keywordInput.value || '').trim().slice(0, 20);
     if (keyword) {
       localStorage.setItem('df_keyword', keyword);
     } else {
@@ -308,7 +308,6 @@ class GameClient {
     document.getElementById('nickname-input').disabled = false;
     document.getElementById('keyword-input').disabled = false;
     document.getElementById('start-btn').disabled = false;
-  }
   }
 
   setSearchingUI(isSearching, keyword = '', message = '') {
