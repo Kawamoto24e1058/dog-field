@@ -75,6 +75,7 @@
         <div id="game-screen" class="screen">
             <div class="game-header">
                 <div class="player opponent">
+                    <div class="player-label">🔴 相手</div>
                     <div class="player-name" id="opponent-name">対手</div>
                     <div class="hp-display">
                         <div class="hp-bar">
@@ -95,6 +96,7 @@
                 </div>
 
                 <div class="player player-self">
+                    <div class="player-label">🟢 あなた</div>
                     <div class="player-name" id="player-name">あなた</div>
                     <div class="hp-display">
                         <div class="hp-bar">
@@ -112,6 +114,18 @@
                 <h3>アクション履歴</h3>
                 <div id="action-log-content" class="action-log-content">
                     <!-- ゲーム開始時の情報 -->
+                </div>
+            </div>
+
+            <!-- 防御カード選択モーダル -->
+            <div id="defend-modal" class="defend-modal" style="display: none;">
+                <div class="defend-modal-content">
+                    <h3>🛡️ 防御カードを選択</h3>
+                    <p class="defend-modal-message" id="defend-modal-message">相手の攻撃！防御カードを選んでください</p>
+                    <div id="defend-card-options" class="defend-card-options">
+                        <!-- 防御可能なカードが表示される -->
+                    </div>
+                    <button id="defend-skip-btn" class="btn btn-secondary">スキップ（防御しない）</button>
                 </div>
             </div>
 
@@ -144,20 +158,5 @@
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="client-config.js"></script>
     <script src="game-client.js"></script>
-    <script>
-        // 緊急デバッグ: ページ読み込み確認
-        console.log('🔥 HTML読み込み完了');
-        window.addEventListener('load', () => {
-            console.log('🔥 window.load イベント発火');
-            const btn = document.getElementById('start-btn');
-            console.log('🔥 start-btn:', btn);
-            if (btn) {
-                btn.onclick = function() {
-                    console.log('🔥 ボタンクリック検知（直接onclick）');
-                    alert('ボタンが押されました！');
-                };
-            }
-        });
-    </script>
 </body>
 </html>

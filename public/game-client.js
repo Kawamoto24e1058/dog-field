@@ -136,6 +136,11 @@ class GameClient {
       this.updateGameUI();
     });
 
+    // 防御カード選択要求
+    this.socket.on('request_defend', (data) => {
+      this.showDefendCardSelection(data);
+    });
+
     // ゲーム終了
     this.socket.on('match_ended', (data) => {
       this.endGame(data);
@@ -578,6 +583,64 @@ class GameClient {
       return;
     }
     this.socket.emit('play_card', { cardId });
+  }
+
+  /**
+   * 防御カード選択モーダルを表示
+   */
+  showDefendCardSelection(data) {
+    const modal = document.getElementById('defend-modal');
+    const message = document.getElementById('defend-modal-message');
+    const optionsContainer = document.getElementById('defend-card-options');
+    const skipBtn = document.getElementById('defend-skip-btn');
+
+    // メッセージ設定
+    message.textContent = `相手の攻撃！ダメージ: ${data.attackDamage} 防御カードを選んでください`;
+
+    // 手札から防御カードをフィルター
+    const defendCards = this.gameState.players[this.playerId].hand.filter(card => {
+      const cardData = CLIENT_CONFIG.CARDS[card.id];
+      return cardData && cardData.type === 'defend';
+    });
+
+    // 防御カードオプションを生成
+    optionsContainer.innerHTML = '';
+    defendCards.forEach(card => {
+      const cardData = CLIENT_CONFIG.CARDS[card.id];
+      const cardEl = document.createElement('div');
+      cardEl.className = 'card defend-card-option';
+      cardEl.style.borderColor = CARD_COLORS[cardData.type];
+      cardEl.innerHTML = `
+        <div class="card-emoji">${cardData.emoji}</div>
+        <div class="card-name">${cardData.name}</div>
+        <div class="card-effect">-${cardData.mitigation} ダメージ</div>
+        <div class="card-cost">コスト: ${cardData.cost}</div>
+      `;
+      cardEl.onclick = () => {
+        this.selectDefendCard(card.instanceId, data.attackId);
+        modal.style.display = 'none';
+      };
+      optionsContainer.appendChild(cardEl);
+    });
+
+    // スキップボタン
+    skipBtn.onclick = () => {
+      this.selectDefendCard(null, data.attackId);
+      modal.style.display = 'none';
+    };
+
+    // モーダル表示
+    modal.style.display = 'flex';
+  }
+
+  /**
+   * 防御カード選択を送信
+   */
+  selectDefendCard(defendCardId, attackId) {
+    this.socket.emit('defend_card_selected', {
+      defendCardId,
+      attackId
+    });
   }
 }
 

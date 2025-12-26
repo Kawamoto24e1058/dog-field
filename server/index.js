@@ -138,6 +138,22 @@ io.on('connection', (socket) => {
 
     if (result.success) {
       const gameState = match.getGameState();
+      
+      // 攻撃カードの場合、相手に防御カード選択を要求
+      if (result.cardType === 'attack' && result.damage > 0) {
+        const opponentId = match.getOpponentId(playerId);
+        const opponentSocket = Array.from(io.sockets.sockets.values())
+          .find(s => s.playerId === opponentId);
+        
+        if (opponentSocket) {
+          opponentSocket.emit('request_defend', {
+            attackDamage: result.damage,
+            attackId: Date.now(),
+            attacker: session.nickname
+          });
+        }
+      }
+      
       io.to(session.matchId).emit('game_state_update', gameState);
 
       // ゲーム終了判定
@@ -155,6 +171,29 @@ io.on('connection', (socket) => {
     } else {
       socket.emit('error', { message: result.error });
     }
+  });
+
+  /**
+   * 防御カード選択
+   */
+  socket.on('defend_card_selected', (data) => {
+    const playerId = socket.playerId;
+    const { defendCardId, attackId } = data;
+
+    const session = playerSessions.get(playerId);
+    if (!session?.matchId) return;
+
+    const match = gameMatches.get(session.matchId);
+    if (!match) return;
+
+    // 防御カードを使用（nullの場合はスキップ）
+    if (defendCardId) {
+      match.playCard(playerId, defendCardId);
+    }
+
+    // ゲーム状態を更新
+    const gameState = match.getGameState();
+    io.to(session.matchId).emit('game_state_update', gameState);
   });
 
   /**

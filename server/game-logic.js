@@ -59,6 +59,7 @@ class GameMatch {
     let damage = 0;
     let recovery = 0;
     let defense = 0;
+    let cardType = card.type;
 
     switch (card.type) {
       case 'attack':
@@ -122,6 +123,7 @@ class GameMatch {
 
     return {
       success: true,
+      cardType,
       damage,
       recovery,
       defense,
@@ -136,6 +138,14 @@ class GameMatch {
   getOpponent(playerId) {
     const playerIds = Object.keys(this.players);
     return this.players[playerIds.find(id => id !== playerId)];
+  }
+
+  /**
+   * 相手プレイヤーIDを取得
+   */
+  getOpponentId(playerId) {
+    const playerIds = Object.keys(this.players);
+    return playerIds.find(id => id !== playerId);
   }
 
   /**
