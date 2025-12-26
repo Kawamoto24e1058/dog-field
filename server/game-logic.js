@@ -37,6 +37,21 @@ class GameMatch {
     this.currentTurnPlayerId = playerIds[(currentIndex + 1) % 2];
     this.turnPhase = 'draw';
     this.turnStartTime = Date.now();
+    
+    // ターン開始時にカードを1枚ドロー
+    const currentPlayer = this.players[this.currentTurnPlayerId];
+    if (currentPlayer) {
+      const drawnCards = currentPlayer.drawCards(1);
+      if (drawnCards.length > 0) {
+        this.actionLog.push({
+          timestamp: Date.now(),
+          playerId: this.currentTurnPlayerId,
+          action: 'draw_turn',
+          cardName: drawnCards[0].name,
+          cardsDrawn: 1
+        });
+      }
+    }
   }
 
   /**
@@ -64,27 +79,26 @@ class GameMatch {
     switch (card.type) {
       case 'attack':
         damage = card.damage;
-        opponent.takeDamage(damage);
+        // 攻撃は後で防御カードの選択後に適用される
+        this.pendingAttack = {
+          playerId,
+          damage: card.damage,
+          cardName: card.name,
+          card: card
+        };
         this.actionLog.push({
           timestamp: Date.now(),
           playerId,
-          action: 'attack',
+          action: 'attack_declared',
           cardName: card.name,
-          damage,
-          targetHP: opponent.hp
+          damage
         });
         break;
 
       case 'defend':
-        player.setDefense(card.mitigation, card.duration);
-        this.actionLog.push({
-          timestamp: Date.now(),
-          playerId,
-          action: 'defend',
-          cardName: card.name,
-          defense: card.mitigation
-        });
-        break;
+        // 防御カードは攻撃時にのみ使用可能
+        // このケースは通常のターンでは使用できない
+        return { success: false, error: 'Defense cards can only be used when being attacked' };
 
       case 'heal':
         recovery = card.recovery;
@@ -146,6 +160,84 @@ class GameMatch {
   getOpponentId(playerId) {
     const playerIds = Object.keys(this.players);
     return playerIds.find(id => id !== playerId);
+  }
+
+  /**
+   * 防御カードで攻撃を処理
+   */
+  resolveAttackWithDefense(defenderId, defendCardId) {
+    if (!this.pendingAttack) {
+      return { success: false, error: 'No pending attack' };
+    }
+
+    const attacker = this.players[this.pendingAttack.playerId];
+    const defender = this.players[defenderId];
+    
+    if (!attacker || !defender) {
+      return { success: false, error: 'Player not found' };
+    }
+
+    let finalDamage = this.pendingAttack.damage;
+    let defenseUsed = null;
+
+    // 防御カードが選択された場合
+    if (defendCardId) {
+      const cardIndex = defender.handCards.findIndex(c => c.id === defendCardId);
+      if (cardIndex !== -1) {
+        const defendCard = defender.handCards[cardIndex];
+        if (defendCard.type === 'defend') {
+          // ダメージを軽減
+          const mitigation = defendCard.mitigation || 0;
+          finalDamage = Math.max(0, finalDamage - mitigation);
+          defenseUsed = {
+            cardName: defendCard.name,
+            mitigation
+          };
+          
+          // 防御カードを手札から削除
+          defender.handCards.splice(cardIndex, 1);
+          
+          this.actionLog.push({
+            timestamp: Date.now(),
+            playerId: defenderId,
+            action: 'defend',
+            cardName: defendCard.name,
+            mitigation,
+            originalDamage: this.pendingAttack.damage,
+            reducedDamage: finalDamage
+          });
+        }
+      }
+    }
+
+    // 実際のダメージを適用
+    defender.takeDamage(finalDamage);
+    
+    this.actionLog.push({
+      timestamp: Date.now(),
+      playerId: this.pendingAttack.playerId,
+      action: 'attack_resolved',
+      cardName: this.pendingAttack.cardName,
+      damage: finalDamage,
+      defended: !!defenseUsed,
+      targetHP: defender.hp
+    });
+
+    // 攻撃をクリア
+    this.pendingAttack = null;
+
+    // 勝敗判定
+    if (defender.hp <= 0) {
+      this.gameStatus = 'ended';
+      this.winner = this.pendingAttack.playerId;
+    }
+
+    return {
+      success: true,
+      finalDamage,
+      defenseUsed,
+      defenderHP: defender.hp
+    };
   }
 
   /**

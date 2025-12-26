@@ -141,6 +141,11 @@ class GameClient {
       this.showDefendCardSelection(data);
     });
 
+    // 防御待機状態
+    this.socket.on('waiting_for_defense', (data) => {
+      this.showNotification(data.message);
+    });
+
     // ゲーム終了
     this.socket.on('match_ended', (data) => {
       this.endGame(data);
@@ -449,18 +454,33 @@ class GameClient {
       
       let actionText = '';
       switch (log.action) {
-        case 'attack':
-          actionText = `<strong>${log.cardName}</strong> でダメージ${log.damage} (敵HP: ${log.targetHP})`;
+        case 'draw_turn':
+          actionText = `<span style="color: #a5f3fc;">📥 ターン開始: <strong>${log.cardName}</strong>をドロー</span>`;
+          break;
+        case 'attack_declared':
+          actionText = `<span style="color: #ff6b6b;">⚔️ <strong>${log.cardName}</strong>で攻撃宣言 (${log.damage}ダメージ)</span>`;
+          break;
+        case 'attack_resolved':
+          if (log.defended) {
+            actionText = `<span style="color: #fb923c;">💥 <strong>${log.cardName}</strong>が着弾 (${log.damage}ダメージ - 防御済) 敵HP: ${log.targetHP}</span>`;
+          } else {
+            actionText = `<span style="color: #ff6b6b;">💥 <strong>${log.cardName}</strong>が着弾 (${log.damage}ダメージ) 敵HP: ${log.targetHP}</span>`;
+          }
           break;
         case 'defend':
-          actionText = `<strong>${log.cardName}</strong> で防御+${log.defense}`;
+          actionText = `<span style="color: #4ecdc4;">🛡️ <strong>${log.cardName}</strong>で防御 (-${log.mitigation}ダメージ軽減 ${log.originalDamage}→${log.reducedDamage})</span>`;
           break;
         case 'heal':
-          actionText = `<strong>${log.cardName}</strong> で${log.recovery}回復 (自身HP: ${log.currentHP})`;
+          actionText = `<span style="color: #95e1d3;">💚 <strong>${log.cardName}</strong>で${log.recovery}回復 HP: ${log.currentHP}</span>`;
           break;
         case 'draw':
-          actionText = `<strong>${log.cardName}</strong> を使用 (+${log.cardsDrawn}カード)`;
+          actionText = `<span style="color: #f9ca24;">🔄 <strong>${log.cardName}</strong>を使用 (+${log.cardsDrawn}カード)</span>`;
           break;
+        case 'attack':
+          actionText = `<span style="color: #ff6b6b;">⚔️ <strong>${log.cardName}</strong>でダメージ${log.damage} 敵HP: ${log.targetHP}</span>`;
+          break;
+        default:
+          actionText = `${log.cardName || log.action}`;
       }
 
       return `<div class="log-entry">[${time}] ${actionText}</div>`;
