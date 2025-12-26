@@ -72,14 +72,14 @@ class GameClient {
   setupSocketListeners() {
     // 接続
     this.socket.on('connect', () => {
-      console.log('✅ Socket.io 接続確立');
+      
     });
 
     // ゲーム参加成功
     this.socket.on('join_success', (data) => {
       this.playerId = data.playerId;
       this.nickname = data.nickname;
-      console.log(`✅ ゲーム参加: ${this.nickname}`);
+      
 
        // スタート要求が残っていれば即マッチング待機画面へ
        if (this.startRequested) {
@@ -143,7 +143,7 @@ class GameClient {
 
     // エラー
     this.socket.on('error', (data) => {
-      console.error('❌ エラー:', data.message);
+      
       alert('エラー: ' + data.message);
     });
 
@@ -154,7 +154,7 @@ class GameClient {
 
     // 切断
     this.socket.on('disconnect', () => {
-      console.log('❌ Socket.io 切断');
+      
     });
   }
 
@@ -215,7 +215,7 @@ class GameClient {
     const keywordInput = document.getElementById('keyword-input');
     const keyword = (keywordInput.value || '').trim().slice(0, 20);
 
-    console.log('📝 startMatchFlow called:', { nickname, keyword, playerId: this.playerId });
+    
 
     if (nickname.length > 20) {
       alert('ニックネームは20文字以内です');
@@ -225,7 +225,7 @@ class GameClient {
     this.pendingKeyword = keyword;
 
     if (!this.playerId) {
-      console.log('👤 Not joined yet, showing start waiting and joining...');
+      
       // 参加前はスタート画面の待機インジケーターを表示
       this.showStartWaiting(keyword);
       this.startRequested = true;
@@ -233,7 +233,7 @@ class GameClient {
       return;
     }
 
-    console.log('🎯 Already joined, searching match...');
+    
     // 既に参加済みなら即検索＋マッチング待機画面へ
     this.searchMatchAndShowWaiting(keyword);
   }
@@ -259,13 +259,13 @@ class GameClient {
    * スタート画面の待機インジケーター表示
    */
   showStartWaiting(keyword) {
-    console.log('⏳ showStartWaiting called with keyword:', keyword);
+    
     const el = document.getElementById('start-waiting');
     if (!el) {
-      console.error('❌ start-waiting element not found!');
+      
       return;
     }
-    console.log('✅ start-waiting element found, displaying...');
+    
     const displayKeyword = keyword || 'any';
     document.getElementById('start-waiting-keyword').innerHTML = `合言葉: <strong>${displayKeyword}</strong>`;
     document.getElementById('start-waiting-status').textContent = '対手を探しています';
@@ -276,7 +276,7 @@ class GameClient {
   }
 
   hideStartWaiting() {
-    console.log('⏹ hideStartWaiting called');
+    
     const el = document.getElementById('start-waiting');
     if (!el) return;
     el.style.display = 'none';
@@ -312,7 +312,7 @@ class GameClient {
    * ゲーム開始
    */
   startGame(data) {
-    console.log('🎮 ゲーム開始:', data);
+    
 
     // プレイヤー情報設定
     const opponent = data.players.find(p => p.id !== this.playerId);
@@ -469,7 +469,7 @@ class GameClient {
    * ゲーム終了
    */
   endGame(data) {
-    console.log('🏆 ゲーム終了:', data);
+    
 
     clearInterval(this.turnTimer);
 
@@ -559,5 +559,5 @@ class GameClient {
 // ゲーム開始
 window.addEventListener('DOMContentLoaded', () => {
   window.gameClient = new GameClient();
-  console.log('🚀 Dog Field - ゲームクライアント起動');
+  
 });

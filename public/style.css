@@ -15,19 +15,14 @@ body {
     padding: 28px;
 }
 
-/* 背景: ネオン色のメッシュグラデーション + サイアングリッド */
+/* 背景: 簡略化バージョン（軽量化） */
 body::before {
     content: "";
     position: fixed;
-    inset: -30% -30% -30% -30%;
-    background:
-      radial-gradient(600px 600px at 15% 20%, rgba(0, 255, 200, 0.12), transparent 55%),
-      radial-gradient(700px 700px at 85% 15%, rgba(138, 43, 226, 0.10), transparent 60%),
-      radial-gradient(650px 650px at 50% 75%, rgba(255, 0, 128, 0.08), transparent 58%),
-      conic-gradient(from 45deg at 50% 50%, rgba(0, 255, 200, 0.15), rgba(138, 43, 226, 0.12), rgba(255, 0, 128, 0.12), rgba(0, 255, 200, 0.15));
-    filter: blur(48px);
-    opacity: 0.55;
-    animation: neon-drift 20s ease-in-out infinite alternate;
+    inset: 0;
+    background: linear-gradient(135deg,
+        rgba(0, 255, 200, 0.03) 0%,
+        rgba(138, 43, 226, 0.02) 100%);
     pointer-events: none;
     z-index: -2;
 }
@@ -37,19 +32,11 @@ body::after {
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(0, 200, 220, 0.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 200, 220, 0.05) 1px, transparent 1px);
-    background-size: 32px 32px, 32px 32px;
-    mix-blend-mode: screen;
-    opacity: 0.25;
+      linear-gradient(rgba(0, 200, 220, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 200, 220, 0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
     pointer-events: none;
     z-index: -1;
-}
-
-@keyframes neon-drift {
-  0% { transform: translate3d(-2%, -1%, 0) scale(1.01); filter: blur(48px) hue-rotate(0deg); }
-  50% { transform: translate3d(1.5%, 1.2%, 0) scale(1.02); filter: blur(52px) hue-rotate(12deg); }
-  100% { transform: translate3d(0%, 2%, 0) scale(1.01); filter: blur(48px) hue-rotate(-8deg); }
 }
 
 .container {
@@ -63,15 +50,14 @@ body::after {
 
 /* ロビー画面 */
 #lobby-screen {
-    background: rgba(10, 14, 26, 0.88);
+    background: rgba(10, 14, 26, 0.95);
     border-radius: 24px;
-    box-shadow: 0 0 40px rgba(0, 255, 200, 0.15), inset 0 0 40px rgba(0, 255, 200, 0.05);
+    box-shadow: 0 0 15px rgba(0, 255, 200, 0.08);
     padding: 40px;
     max-width: 1140px;
     width: 100%;
     margin: 24px auto;
-    border: 1px solid rgba(0, 200, 255, 0.25);
-    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 200, 255, 0.15);
 }
 
 .lobby-content {
@@ -342,17 +328,7 @@ input[type="text"]:focus {
 
 /* ゲーム画面 */
 #game-screen {
-    background: rgba(10, 14, 26, 0.92);
-    border-radius: 22px;
-    box-shadow: 0 0 30px rgba(0, 200, 255, 0.15);
-    padding: 22px;
-    max-width: 1100px;
-    margin: 20px auto;
-    flex-direction: column;
-    height: 90vh;
-    border: 1px solid rgba(0, 200, 255, 0.20);
-    backdrop-filter: blur(10px);
-}
+    background: rgba(10, 14, 26, 0.95);\n    border-radius: 22px;\n    box-shadow: 0 0 15px rgba(0, 200, 255, 0.08);\n    padding: 22px;\n    max-width: 1100px;\n    margin: 20px auto;\n    flex-direction: column;\n    height: 90vh;\n    border: 1px solid rgba(0, 200, 255, 0.15);\n}
 
 #game-screen.active {
     display: flex;
@@ -696,11 +672,11 @@ input[type="text"]:focus {
 }
 
 .matching-content {
-    background: linear-gradient(135deg, rgba(20, 26, 47, 0.95), rgba(15, 18, 35, 0.95));
-    border: 2px solid rgba(0, 255, 200, 0.30);
+    background: rgba(10, 14, 26, 0.95);
+    border: 2px solid rgba(0, 255, 200, 0.25);
     border-radius: 24px;
     padding: 50px 40px;
-    box-shadow: 0 0 40px rgba(0, 255, 200, 0.15), inset 0 0 30px rgba(0, 255, 200, 0.05);
+    box-shadow: 0 0 15px rgba(0, 255, 200, 0.08);
     text-align: center;
     max-width: 400px;
     width: 100%;
