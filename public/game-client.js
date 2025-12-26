@@ -432,13 +432,15 @@ class GameClient {
 
      handContainer.innerHTML = playerData.hand.map(card => {
        const borderColor = CARD_COLORS[card.type] || '#00d9ff';
+       const description = card.description || '';
        return `
        <div class="card" data-card-id="${card.id}" style="border-color: ${borderColor};" onclick="window.gameClient.playCardFromUI('${card.id}')">
          <div class="card-emoji">${card.emoji}</div>
          <div class="card-name">${card.name}</div>
-         <div class="card-effect">${card.description || ''}</div>
          <div class="card-cost">コスト ${card.cost}</div>
+         ${description ? `<div class="card-tooltip">${description}</div>` : ''}
        </div>
+     `;       </div>
      `;
      }).join('');
   }
@@ -633,11 +635,12 @@ class GameClient {
       const cardEl = document.createElement('div');
       cardEl.className = 'card defend-card-option';
       cardEl.style.borderColor = CARD_COLORS[cardData.type];
+      const description = cardData.description || `ダメージを${cardData.mitigation}軽減`;
       cardEl.innerHTML = `
         <div class="card-emoji">${cardData.emoji}</div>
         <div class="card-name">${cardData.name}</div>
-        <div class="card-effect">-${cardData.mitigation} ダメージ</div>
         <div class="card-cost">コスト: ${cardData.cost}</div>
+        <div class="card-tooltip">${description}</div>
       `;
       cardEl.onclick = () => {
         this.selectDefendCard(card.instanceId, data.attackId);

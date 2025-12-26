@@ -4,7 +4,7 @@ module.exports = {
   PLAYER: {
     INITIAL_HP: 100,
     INITIAL_HAND_SIZE: 5,
-    MAX_HAND_SIZE: 8
+    MAX_HAND_SIZE: 12
   },
 
   // ターン設定

@@ -316,6 +316,11 @@ class GamePlayer {
   drawCards(count = 1) {
     const drawn = [];
     for (let i = 0; i < count && this.deckCards.length > 0; i++) {
+      // 手札上限チェック
+      if (this.handCards.length >= CONFIG.PLAYER.MAX_HAND_SIZE) {
+        break;
+      }
+      
       const card = this.deckCards.pop();
       this.handCards.push(card);
       drawn.push(card);
