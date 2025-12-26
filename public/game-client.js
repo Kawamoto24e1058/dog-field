@@ -213,6 +213,12 @@ class GameClient {
     this.pendingKeyword = keyword;
 
     if (!this.playerId) {
+      // まだ参加していない場合でも、先に待機画面を表示してUXを向上
+      this.showScreen('matching');
+      const displayKeyword = keyword || 'any';
+      document.getElementById('matching-keyword-display').innerHTML = `合言葉: <strong>${displayKeyword}</strong>`;
+      document.getElementById('matching-status').textContent = '対手を探しています';
+
       this.startRequested = true;
       this.socket.emit('join_game', { nickname });
       return;
@@ -496,8 +502,7 @@ class GameClient {
       this.screens[screenName].classList.remove('active');
     }
   }
-}
-
+  
   /**
    * UI からカードをプレイ
    */
@@ -508,6 +513,7 @@ class GameClient {
     }
     this.socket.emit('play_card', { cardId });
   }
+}
 
 // ゲーム開始
 window.addEventListener('DOMContentLoaded', () => {
