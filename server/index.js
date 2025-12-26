@@ -70,29 +70,32 @@ io.on('connection', (socket) => {
     }
 
     const session = playerSessions.get(playerId);
-    const rawKeyword = (data.keyword || '').trim();
-    const keyword = rawKeyword.toLowerCase() || 'any';
+    const keyword = (data.keyword || '').trim().toLowerCase() || 'any';
 
-    console.log(`🔍 マッチング検索: ${session.nickname} keyword=${keyword}`);
+    console.log(`🔍 マッチング検索: ${session.nickname} keyword=${keyword}, 待ち人数=${waitingQueue.length}`);
 
     // マッチング相手探索の優先順位:
     // 1) 完全一致
-    // 2) 片方が any
+    // 2) 片方が any (自分か相手)
     let opponentIndex = waitingQueue.findIndex(p => p.keyword === keyword);
     if (opponentIndex === -1 && keyword !== 'any') {
+      // 相手が any の場合
       opponentIndex = waitingQueue.findIndex(p => p.keyword === 'any');
     }
     if (opponentIndex === -1 && keyword === 'any') {
-      opponentIndex = waitingQueue.findIndex(() => true); // 先頭
+      // 自分が any の場合、キューの先頭（何でもいい）
+      opponentIndex = waitingQueue.length > 0 ? 0 : -1;
     }
 
     if (opponentIndex !== -1) {
       const opponent = waitingQueue.splice(opponentIndex, 1)[0];
+      console.log(`✅ マッチング成立: ${session.nickname} ⇄ ${playerSessions.get(opponent.playerId).nickname}`);
       startMatch(playerId, opponent.playerId);
     } else {
       // キューに追加
       waitingQueue.push({ playerId, socketId: socket.id, keyword });
-      socket.emit('search_status', { status: 'searching', message: `キーワード: ${keyword} で検索中...` });
+      console.log(`⏳ キューに追加: ${session.nickname} (keyword=${keyword})`);
+      socket.emit('search_status', { status: 'searching', message: `待機中... (キーワード: ${keyword})` });
     }
 
     broadcastLobbyUpdate();

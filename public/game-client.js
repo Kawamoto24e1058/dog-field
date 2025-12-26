@@ -38,7 +38,13 @@ class GameClient {
    */
   setupEventListeners() {
     // スタート画面
-    document.getElementById('start-btn').addEventListener('click', () => this.startMatchFlow());
+    const startBtn = document.getElementById('start-btn');
+    if (startBtn) {
+      startBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.startMatchFlow();
+      });
+    }
     
     // マッチング待機画面
     document.getElementById('cancel-matching-btn').addEventListener('click', () => this.cancelMatching());
@@ -215,26 +221,29 @@ class GameClient {
     const keywordInput = document.getElementById('keyword-input');
     const keyword = (keywordInput.value || '').trim().slice(0, 20);
 
-    
-
     if (nickname.length > 20) {
       alert('ニックネームは20文字以内です');
       return;
     }
 
+    if (!nickname) {
+      alert('ニックネームを入力してください');
+      return;
+    }
+
     this.pendingKeyword = keyword;
+    this.pendingNickname = nickname;
 
     if (!this.playerId) {
-      
-      // 参加前はスタート画面の待機インジケーターを表示
+      // 未参加なら、まず待機画面を表示（UX向上）
       this.showStartWaiting(keyword);
       this.startRequested = true;
+      // ニックネームを保存して join_game を送信
       this.socket.emit('join_game', { nickname });
       return;
     }
 
-    
-    // 既に参加済みなら即検索＋マッチング待機画面へ
+    // 既に参加済み → 検索＋マッチング待機画面へ
     this.searchMatchAndShowWaiting(keyword);
   }
 
@@ -242,17 +251,27 @@ class GameClient {
    * マッチング検索して待機画面を表示
    */
   searchMatchAndShowWaiting(keyword) {
-    this.pendingKeyword = keyword;
+    // キーワードを小文字化・正規化
+    const normalizedKeyword = (keyword || '').trim().toLowerCase() || 'any';
+    const displayKeyword = normalizedKeyword === 'any' ? 'any' : normalizedKeyword;
+    
+    // スタート待機インジケーターを隠す
+    this.hideStartWaiting();
+    
     // マッチング待機画面を表示
     this.showScreen('matching');
     
-    // キーワード表示を更新
-    const displayKeyword = keyword || 'any';
+    // マッチング画面を更新
     document.getElementById('matching-keyword-display').innerHTML = `合言葉: <strong>${displayKeyword}</strong>`;
-    document.getElementById('matching-status').textContent = '対手を探しています';
+    document.getElementById('matching-status').textContent = '対手を探しています...';
     
-    // 検索開始
-    this.socket.emit('search_match', { keyword });
+    // キーワードを保存
+    if (normalizedKeyword !== 'any') {
+      localStorage.setItem('df_keyword', normalizedKeyword);
+    }
+    
+    // サーバーに正規化されたキーワードで検索を開始
+    this.socket.emit('search_match', { keyword: normalizedKeyword });
   }
 
   /**
