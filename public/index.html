@@ -38,6 +38,21 @@
                     <div class="cta-row">
                         <button id="start-btn" class="btn btn-primary large pulse"><span class="btn-icon">▶</span> マッチ開始</button>
                     </div>
+
+                    <!-- スタート画面の待機インジケーター（必要時のみ表示） -->
+                    <div id="start-waiting" class="start-waiting" style="display: none;" aria-live="polite">
+                        <div class="start-waiting-row">
+                            <div class="start-spinner" aria-hidden="true"></div>
+                            <div class="start-waiting-text">
+                                <div id="start-waiting-title" class="start-waiting-title">マッチング中...</div>
+                                <div id="start-waiting-status" class="start-waiting-status">対手を探しています</div>
+                                <div id="start-waiting-keyword" class="start-waiting-keyword">合言葉: <strong>any</strong></div>
+                            </div>
+                        </div>
+                        <div class="start-waiting-actions">
+                            <button id="start-cancel-btn" class="btn btn-secondary">キャンセル</button>
+                        </div>
+                    </div>
                 </aside>
             </div>
         </div>

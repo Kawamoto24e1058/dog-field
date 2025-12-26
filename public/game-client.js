@@ -42,6 +42,11 @@ class GameClient {
     
     // マッチング待機画面
     document.getElementById('cancel-matching-btn').addEventListener('click', () => this.cancelMatching());
+    // スタート待機インジケーターのキャンセル
+    const startCancelBtn = document.getElementById('start-cancel-btn');
+    if (startCancelBtn) {
+      startCancelBtn.addEventListener('click', () => this.cancelMatching());
+    }
     
     // ゲーム画面
     document.getElementById('surrender-btn').addEventListener('click', () => this.surrender());
@@ -92,12 +97,16 @@ class GameClient {
     this.socket.on('search_status', (data) => {
       if (this.screens.matching.classList.contains('active')) {
         this.updateMatchingStatus(data.message);
+      } else {
+        const el = document.getElementById('start-waiting-status');
+        if (el) el.textContent = data.message;
       }
     });
 
     // マッチング検索キャンセル
     this.socket.on('search_cancelled', () => {
       this.setSearchingUI(false);
+      this.hideStartWaiting();
     });
 
     // マッチ開始
@@ -109,7 +118,8 @@ class GameClient {
       const self = data.players.find(p => p.id === this.playerId);
       this.playerRole = self.role;
 
-      // マッチング画面を隠す、ゲーム画面を表示
+      // 待機表示をクリアし、ゲーム画面を表示
+      this.hideStartWaiting();
       this.showScreen('game');
       this.startGame(data);
     });
@@ -213,12 +223,8 @@ class GameClient {
     this.pendingKeyword = keyword;
 
     if (!this.playerId) {
-      // まだ参加していない場合でも、先に待機画面を表示してUXを向上
-      this.showScreen('matching');
-      const displayKeyword = keyword || 'any';
-      document.getElementById('matching-keyword-display').innerHTML = `合言葉: <strong>${displayKeyword}</strong>`;
-      document.getElementById('matching-status').textContent = '対手を探しています';
-
+      // 参加前はスタート画面の待機インジケーターを表示
+      this.showStartWaiting(keyword);
       this.startRequested = true;
       this.socket.emit('join_game', { nickname });
       return;
@@ -243,6 +249,30 @@ class GameClient {
     
     // 検索開始
     this.socket.emit('search_match', { keyword });
+  }
+
+  /**
+   * スタート画面の待機インジケーター表示
+   */
+  showStartWaiting(keyword) {
+    const el = document.getElementById('start-waiting');
+    if (!el) return;
+    const displayKeyword = keyword || 'any';
+    document.getElementById('start-waiting-keyword').innerHTML = `合言葉: <strong>${displayKeyword}</strong>`;
+    document.getElementById('start-waiting-status').textContent = '対手を探しています';
+    el.style.display = 'block';
+    document.getElementById('nickname-input').disabled = true;
+    document.getElementById('keyword-input').disabled = true;
+    document.getElementById('start-btn').disabled = true;
+  }
+
+  hideStartWaiting() {
+    const el = document.getElementById('start-waiting');
+    if (!el) return;
+    el.style.display = 'none';
+    document.getElementById('nickname-input').disabled = false;
+    document.getElementById('keyword-input').disabled = false;
+    document.getElementById('start-btn').disabled = false;
   }
 
   setSearchingUI(isSearching, keyword = '', message = '') {
@@ -468,6 +498,7 @@ class GameClient {
     // スタート画面の入力をクリア
     document.getElementById('nickname-input').value = '';
     // キーワードは保持
+    this.hideStartWaiting();
   }
 
   /**

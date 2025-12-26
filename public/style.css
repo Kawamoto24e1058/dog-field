@@ -644,6 +644,48 @@ input[type="text"]:focus {
     display: block;
 }
 
+/* スタート画面の待機インジケーター */
+.start-waiting {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border: 1px solid rgba(0, 200, 255, 0.30);
+    border-radius: 14px;
+    background: rgba(10, 14, 26, 0.65);
+    box-shadow: 0 0 20px rgba(0, 200, 255, 0.10);
+}
+.start-waiting-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.start-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0, 200, 255, 0.25);
+    border-top-color: rgba(0, 200, 255, 0.95);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+.start-waiting-title {
+    font-weight: 700;
+    color: rgba(0, 255, 200, 0.95);
+}
+.start-waiting-status {
+    font-size: 0.95em;
+    color: rgba(220, 240, 255, 0.85);
+    margin-top: 2px;
+}
+.start-waiting-keyword {
+    font-size: 0.9em;
+    color: rgba(180, 230, 255, 0.85);
+    margin-top: 6px;
+}
+.start-waiting-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+}
+
 /* マッチング待機画面 */
 .matching-container {
     display: flex;
